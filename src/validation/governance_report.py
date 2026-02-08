@@ -223,8 +223,9 @@ class GovernanceReporter:
         
         Calculates multiple fairness metrics:
         - Demographic Parity: P(Ŷ=1|A=0) / P(Ŷ=1|A=1)
-        - Equal Opportunity: P(Ŷ=1|Y=1,A=0) / P(Ŷ=1|Y=1,A=1)
-        - Equalized Odds: Combines TPR and FPR parity
+        - Equal Opportunity: P(Ŷ=1|Y=1,A=0) / P(Ŷ=1|Y=1,A=1) (TPR parity)
+        - Equalized Odds Score: 1 - max(|1-TPR_ratio|, |1-FPR_ratio|)
+          Both TPR and FPR should be similar across groups. Score of 1.0 is perfect.
         
         Args:
             y_true: True labels
@@ -274,8 +275,11 @@ class GovernanceReporter:
         fpr_parity = fpr_0 / fpr_1 if fpr_1 > 0 else 0
         
         # Equalized Odds (combines TPR and FPR parity)
-        # Average of TPR and FPR ratios
-        equalized_odds = (equal_opportunity + fpr_parity) / 2
+        # Both TPR and FPR should be similar across groups
+        # We report the maximum deviation from parity
+        tpr_deviation = abs(1.0 - equal_opportunity)
+        fpr_deviation = abs(1.0 - fpr_parity)
+        equalized_odds_score = 1.0 - max(tpr_deviation, fpr_deviation)
         
         # Acceptance rates by group
         acceptance_rate_0 = positive_rate_0
@@ -284,7 +288,7 @@ class GovernanceReporter:
         fairness_metrics = {
             'demographic_parity': float(demographic_parity),
             'equal_opportunity': float(equal_opportunity),
-            'equalized_odds': float(equalized_odds),
+            'equalized_odds_score': float(equalized_odds_score),
             'fpr_parity': float(fpr_parity),
             'acceptance_rate_group_0': float(acceptance_rate_0),
             'acceptance_rate_group_1': float(acceptance_rate_1),
@@ -311,13 +315,19 @@ class GovernanceReporter:
         thresholds_met = 0
         total_checks = 0
         
-        for metric in ['demographic_parity', 'equal_opportunity', 'equalized_odds']:
+        for metric in ['demographic_parity', 'equal_opportunity', 'equalized_odds_score']:
             if metric in metrics:
                 total_checks += 1
                 value = metrics[metric]
-                # Check if ratio is between 0.8 and 1.25
-                if 0.8 <= value <= 1.25:
-                    thresholds_met += 1
+                # Check if ratio/score is within acceptable range
+                # For equalized_odds_score, higher is better (closer to 1.0)
+                if metric == 'equalized_odds_score':
+                    if value >= 0.8:  # 80% or better means both TPR and FPR are within 20% parity
+                        thresholds_met += 1
+                else:
+                    # For ratios, check if between 0.8 and 1.25
+                    if 0.8 <= value <= 1.25:
+                        thresholds_met += 1
         
         if total_checks == 0:
             return 'unknown'
