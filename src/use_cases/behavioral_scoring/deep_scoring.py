@@ -721,13 +721,21 @@ if TORCH_AVAILABLE:
             div_term = torch.exp(torch.arange(0, d_model, 2) * (-np.log(10000.0) / d_model))
             pe = torch.zeros(max_len, 1, d_model)
             
-            # Handle odd d_model dimensions
+            # Apply sinusoidal positional encoding
+            # Even positions (0, 2, 4, ...) use sine
             pe[:, 0, 0::2] = torch.sin(position * div_term)
+            
+            # Odd positions (1, 3, 5, ...) use cosine
             if d_model % 2 == 0:
+                # Even d_model: all odd positions can use div_term directly
                 pe[:, 0, 1::2] = torch.cos(position * div_term)
             else:
-                # For odd d_model, cos positions are one less
-                pe[:, 0, 1::2] = torch.cos(position * div_term[:-1]) if len(div_term) > 1 else torch.cos(position * div_term)
+                # Odd d_model: last sine position has no cosine counterpart
+                # so we need one fewer cosine term
+                if len(div_term) > 1:
+                    pe[:, 0, 1::2] = torch.cos(position * div_term[:-1])
+                else:
+                    pe[:, 0, 1::2] = torch.cos(position * div_term)
             
             self.register_buffer('pe', pe)
         

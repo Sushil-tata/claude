@@ -704,17 +704,20 @@ class BehavioralScoringPipeline:
             )
             
             # Match sequences with labels
-            # Create proper mapping from user_id to label
+            # NOTE: This assumes y is aligned with unique users in the same order
+            # as they appear in transactions_df. If using external labels,
+            # ensure they are properly aligned or use a DataFrame merge instead.
             user_ids = transactions_df[self.user_col].unique()
             
             # Build label lookup from y (which should correspond to users in order)
             if len(y) != len(user_ids):
                 logger.warning(
                     f"Label count ({len(y)}) doesn't match user count ({len(user_ids)}). "
-                    "Using available labels."
+                    "Using available labels. Ensure y is aligned with user order."
                 )
             
             # Create mapping ensuring we only use available labels
+            # Positional mapping: y[i] corresponds to user_ids[i]
             user_to_label = {}
             for i, user_id in enumerate(user_ids):
                 if i < len(y):
