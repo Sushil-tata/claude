@@ -66,6 +66,7 @@ class StressTestConfig:
     n_simulations: int = 10000
     include_correlation: bool = True
     regulatory_framework: str = 'CCAR'  # CCAR, DFAST, Basel
+    default_lgd: float = 0.45  # Default Loss Given Default assumption (45% loss rate = 55% recovery)
 
 
 class StressTestEngine:
@@ -246,7 +247,10 @@ class StressTestEngine:
         
         # Extract baseline values
         baseline_pd = portfolio_df[pd_col].values
-        baseline_lgd = portfolio_df[lgd_col].values if lgd_col in portfolio_df.columns else np.full(len(portfolio_df), 0.45)
+        baseline_lgd = (
+            portfolio_df[lgd_col].values if lgd_col in portfolio_df.columns 
+            else np.full(len(portfolio_df), self.config.default_lgd)
+        )
         baseline_ead = portfolio_df[ead_col].values
         
         # Apply stress

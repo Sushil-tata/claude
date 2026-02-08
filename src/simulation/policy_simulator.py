@@ -317,24 +317,40 @@ class PolicySimulator:
         successes = np.zeros(n, dtype=bool)
         
         for contact_round in range(max_contact_rounds):
+            # Only contact accounts that haven't succeeded yet
+            eligible_for_contact = ~successes
+            
+            if not eligible_for_contact.any():
+                # All accounts have succeeded, no need for more contacts
+                break
+            
             # Select channel for this round
             channel_name = policy.channels[contact_round % len(policy.channels)]
             channel = self.channels[channel_name]
             
-            # Simulate contact success
-            contacted = self.rng.random(n) < channel.contact_rate
+            # Simulate contact success (only for eligible accounts)
+            contact_attempts = np.zeros(n, dtype=bool)
+            contact_attempts[eligible_for_contact] = (
+                self.rng.random(eligible_for_contact.sum()) < channel.contact_rate
+            )
             
             # Among contacted, simulate response
-            responded = contacted & (self.rng.random(n) < channel.response_rate)
+            response_attempts = np.zeros(n, dtype=bool)
+            response_attempts[contact_attempts] = (
+                self.rng.random(contact_attempts.sum()) < channel.response_rate
+            )
             
             # Among responded, simulate success
-            round_successes = responded & (self.rng.random(n) < base_success_rate)
+            round_successes = np.zeros(n, dtype=bool)
+            round_successes[response_attempts] = (
+                self.rng.random(response_attempts.sum()) < base_success_rate
+            )
             
-            # Update successes (only if not already successful)
+            # Update successes
             successes = successes | round_successes
             
-            # Calculate costs
-            contacts_made = contacted.sum()
+            # Calculate costs (only for actual contacts made)
+            contacts_made = contact_attempts.sum()
             total_contacts += contacts_made
             total_cost += contacts_made * channel.cost
         

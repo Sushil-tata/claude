@@ -57,6 +57,7 @@ class SimulationConfig:
     confidence_levels: List[float] = None
     discount_rate: float = 0.10
     time_horizon: int = 36  # months
+    pre_default_payment_factor: float = 0.1  # Fraction of principal paid monthly before default
     
     def __post_init__(self):
         if self.confidence_levels is None:
@@ -286,8 +287,11 @@ class MonteCarloSimulator:
                 recovery_amounts[i] = principal * recovery_rates[i]
                 default_month = int(time_to_default[i])
                 
-                # Some payments before default
-                pre_default_payments = principal * payment_rates[i] * 0.1 * default_month
+                # Some payments before default (reduced payment rate before defaulting)
+                pre_default_payments = (
+                    principal * payment_rates[i] * 
+                    self.config.pre_default_payment_factor * default_month
+                )
                 payment_amounts[i] = pre_default_payments
                 
                 # NPV calculation
