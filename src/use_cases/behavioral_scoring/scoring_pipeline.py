@@ -704,13 +704,30 @@ class BehavioralScoringPipeline:
             )
             
             # Match sequences with labels
-            user_to_label = dict(zip(transactions_df[self.user_col].unique(), y))
+            # Create proper mapping from user_id to label
+            user_ids = transactions_df[self.user_col].unique()
+            
+            # Build label lookup from y (which should correspond to users in order)
+            if len(y) != len(user_ids):
+                logger.warning(
+                    f"Label count ({len(y)}) doesn't match user count ({len(user_ids)}). "
+                    "Using available labels."
+                )
+            
+            # Create mapping ensuring we only use available labels
+            user_to_label = {}
+            for i, user_id in enumerate(user_ids):
+                if i < len(y):
+                    user_to_label[user_id] = y[i]
+                else:
+                    user_to_label[user_id] = 0  # Default for missing labels
+            
             sequence_labels = np.array([
                 user_to_label.get(user_id, 0)
-                for user_id in transactions_df[self.user_col].unique()
+                for user_id in user_ids[:len(sequences)]
             ])
             
-            self.deep_model.fit(sequences, sequence_labels[:len(sequences)], epochs=20, verbose=False)
+            self.deep_model.fit(sequences, sequence_labels, epochs=20, verbose=False)
             logger.info("Deep learning model trained")
             
         except Exception as e:

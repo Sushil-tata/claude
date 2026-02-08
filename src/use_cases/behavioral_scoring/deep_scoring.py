@@ -710,6 +710,11 @@ if TORCH_AVAILABLE:
         
         def __init__(self, d_model: int, dropout: float = 0.1, max_len: int = 5000):
             super(PositionalEncoding, self).__init__()
+            
+            # Validate d_model
+            if d_model < 2:
+                raise ValueError(f"d_model must be at least 2, got {d_model}")
+            
             self.dropout = nn.Dropout(p=dropout)
             
             position = torch.arange(max_len).unsqueeze(1)
@@ -721,7 +726,8 @@ if TORCH_AVAILABLE:
             if d_model % 2 == 0:
                 pe[:, 0, 1::2] = torch.cos(position * div_term)
             else:
-                pe[:, 0, 1::2] = torch.cos(position * div_term[:-1])
+                # For odd d_model, cos positions are one less
+                pe[:, 0, 1::2] = torch.cos(position * div_term[:-1]) if len(div_term) > 1 else torch.cos(position * div_term)
             
             self.register_buffer('pe', pe)
         

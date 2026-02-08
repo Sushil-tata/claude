@@ -466,7 +466,7 @@ class BehavioralEnsembleScorer:
         if model_type == "lgbm" and LGBM_AVAILABLE:
             return LGBMClassifier(n_estimators=100, random_state=42, verbose=-1)
         elif model_type == "xgb" and XGB_AVAILABLE:
-            return XGBClassifier(n_estimators=100, random_state=42, use_label_encoder=False, eval_metric='logloss')
+            return XGBClassifier(n_estimators=100, random_state=42, eval_metric='logloss')
         elif model_type == "catboost" and CATBOOST_AVAILABLE:
             return CatBoostClassifier(iterations=100, random_state=42, verbose=0)
         elif model_type == "rf":
