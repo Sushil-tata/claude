@@ -797,7 +797,7 @@ if __name__ == "__main__":
     df = pd.DataFrame(
         {
             "user_id": np.random.choice([1, 2, 3], n_samples),
-            "timestamp": pd.date_range("2024-01-01", periods=n_samples, freq="D")[:n_samples],
+            "timestamp": pd.date_range("2024-01-01", periods=n_samples, freq="D"),
             "amount": np.random.gamma(2, 20, n_samples),
             "category": np.random.choice(
                 ["Food", "Retail", "Gas", "Entertainment"], n_samples

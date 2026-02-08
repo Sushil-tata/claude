@@ -763,7 +763,7 @@ if __name__ == "__main__":
     dates = pd.date_range("2024-01-01", periods=100, freq="D")
     df = pd.DataFrame(
         {
-            "user_id": np.repeat([1, 2, 3], [100, 100, 100])[:100],
+            "user_id": np.repeat([1, 2, 3], [34, 33, 33]),
             "timestamp": dates,
             "amount": np.random.gamma(2, 50, 100) + np.linspace(0, 100, 100),
         }
