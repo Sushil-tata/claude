@@ -508,12 +508,14 @@ class BehavioralEnsembleScorer:
         else:
             self._fit_global(X_scaled, y)
         
+        # Mark as fitted before calibration (calibrator needs to call predict)
+        self.is_fitted = True
+        
         # Fit calibrator if needed
         if self.calibrator is not None:
             train_preds = self.predict(X, segments=segments)
             self.calibrator.fit(train_preds, y)
         
-        self.is_fitted = True
         logger.info("Ensemble training completed")
     
     def _fit_global(self, X: np.ndarray, y: np.ndarray):
@@ -631,8 +633,8 @@ class BehavioralEnsembleScorer:
         else:
             predictions = self._predict_global(X_scaled)
         
-        # Calibrate if needed
-        if self.calibrator is not None:
+        # Calibrate if needed (check if calibrator is fitted)
+        if self.calibrator is not None and self.calibrator.is_fitted:
             predictions = self.calibrator.transform(predictions)
         
         if return_base_predictions:
