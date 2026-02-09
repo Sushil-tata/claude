@@ -6,6 +6,9 @@
 [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+**👥 Sharing with teammates?** → See [SHARE_WITH_TEAMMATE.md](SHARE_WITH_TEAMMATE.md) for ready-to-send messages  
+**🆕 New to this project?** → Start with [ONBOARDING.md](ONBOARDING.md) for a 5-minute quickstart
+
 ## 🎯 Overview
 
 This framework provides production-ready ML infrastructure for financial services, covering:
@@ -239,8 +242,12 @@ validation:
 
 ## 🎓 Documentation
 
+### For New Users
+- **[ONBOARDING.md](ONBOARDING.md)** - **5-minute quickstart for new team members** ⭐
+- **[SHARE_WITH_TEAMMATE.md](SHARE_WITH_TEAMMATE.md)** - **Ready-to-send messages for sharing** 📧
+
 ### Getting Started
-- **[USAGE_GUIDE.md](USAGE_GUIDE.md)** - **Complete usage guide with examples** ⭐
+- **[USAGE_GUIDE.md](USAGE_GUIDE.md)** - Complete usage guide with examples
 - **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Fast lookup for common tasks
 
 ### Component Documentation
