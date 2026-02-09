@@ -34,6 +34,8 @@ pip install -r requirements.txt
 python demo.py
 ```
 
+**📖 For detailed usage instructions, see [USAGE_GUIDE.md](USAGE_GUIDE.md)**
+
 ### Basic Usage
 
 ```python
@@ -58,6 +60,8 @@ decision = agent.analyze_problem(problem)
 report = agent.generate_report(decision)
 print(report)
 ```
+
+**📚 See [QUICK_REFERENCE.md](QUICK_REFERENCE.md) for more code snippets**
 
 ## 📁 Project Structure
 
@@ -235,10 +239,19 @@ validation:
 
 ## 🎓 Documentation
 
+### Getting Started
+- **[USAGE_GUIDE.md](USAGE_GUIDE.md)** - **Complete usage guide with examples** ⭐
+- **[QUICK_REFERENCE.md](QUICK_REFERENCE.md)** - Fast lookup for common tasks
+
+### Component Documentation
 - [Data Layer Guide](docs/data_layer_guide.md) - Data loading, quality, EDA
 - [Feature Engineering Guide](docs/FEATURE_ENGINEERING_GUIDE.md) - All feature types
 - [Models Documentation](docs/MODELS_DOCUMENTATION.md) - Model APIs and usage
 - [Recommender Systems](src/recommender/README.md) - Bandits, uplift, ranking
+
+### Status & Reports
+- [FINAL_STATUS.md](FINAL_STATUS.md) - Project completion status
+- [STATUS_REPORT.md](STATUS_REPORT.md) - Health check results
 
 ## 🧪 Testing
 
